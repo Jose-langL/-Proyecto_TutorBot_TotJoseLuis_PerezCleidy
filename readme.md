@@ -16,7 +16,7 @@ TutorBot es un asistente automatizado integrado con Telegram y Google Sheets que
 El acceso compartido está configurado para la lectura y escritura de las siguientes hojas:
 1. **MATERIAS:** Lista de cursos ofertados.
 2. **DISPONIBILIDAD:** Horarios, estados y costos.
-3. **ESTUDIANTES:** Registro completo de solicitudes e inscripciones.
+3. **ESTUDIANTES:** Registro completo de solicitudes e inscripciones..
 
 ## Flujo del Sistema (Capturas de Pantalla)
 ![alt text](image-1.png)
