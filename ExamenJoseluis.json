@@ -1,0 +1,822 @@
+{
+  "name": "TutorBot",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "registro",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1504,
+        1328
+      ],
+      "id": "3e375e71-dc46-4ca7-8846-fad56b0dc72e",
+      "name": "Webhook",
+      "webhookId": "296f80cf-dedb-4c39-9fb5-6edd5d68c172"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M",
+          "mode": "list",
+          "cachedResultName": "TutorBot_DBJ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "TUTORES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2224,
+        2048
+      ],
+      "id": "79cdcc89-90af-46fe-ac87-5f93cb0da663",
+      "name": "Materia",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kPMiPAaCJhVnXwuI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        1424,
+        2224
+      ],
+      "id": "d538f636-5606-4dac-b2a2-2ccfeadf26f7",
+      "name": "Trigger",
+      "webhookId": "c6c2229e-8675-4714-8dfe-8d6df0d0e536",
+      "credentials": {
+        "telegramApi": {
+          "id": "z4OcYpVLiNwjaoEu",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "52036554-4a17-4237-9c81-891ca829c1db",
+              "leftValue": "={{ $json.ruta.tipo }}",
+              "rightValue": "message",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        2224
+      ],
+      "id": "b0e2d268-9698-4fbf-9fce-bab962c12efb",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8692513632:AAFTnD0ocf0h9y0d-dZpvvgS991b9ICT2q4/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2800,
+        2592
+      ],
+      "id": "34919ce9-b6ce-4de1-a4c9-9dcd9fe82af6",
+      "name": "Mensaje Materia"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M",
+          "mode": "list",
+          "cachedResultName": "TutorBot_DBJ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1334023051,
+          "mode": "list",
+          "cachedResultName": "DISPONIBILIDAD",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit#gid=1334023051"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2368,
+        2592
+      ],
+      "id": "b379a1a4-9d3f-4915-a57d-e4172f6bc3dd",
+      "name": "Disponibilidad",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kPMiPAaCJhVnXwuI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let ruta = \"\";\nconst input = $input.first().json;\n\nif(input.callback_query){\n    const callbackData = input.callback_query.data;\n    // Hacemos el split. Ejemplo: \"materia_java\" -> [\"materia\", \"java\"]\n    const partes = callbackData.split('_');\n    \n    ruta = {\n        tipo: 'callback',\n        chatid: input.callback_query.message.chat.id,\n        raw_data: callbackData,\n        // Si el formato siempre es prefijo_valor, tomamos el primer elemento como sub-tipo\n        sub_tipo: partes[0] || 'unknown', \n        valor: partes[1] || ''\n    };\n\n} else if (input.message){\n    ruta = {\n        tipo: 'message',\n        chatid: input.message.chat.id,\n        data: input.message.text\n    };\n}\n\nreturn {\n    ruta\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        2224
+      ],
+      "id": "2fdf589f-869e-4510-83f5-9ff9ce880f86",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.ruta.sub_tipo }}",
+                    "rightValue": "menu",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ca84a18d-4fc5-4bd5-8a07-603528b09366"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0d58d047-67ed-4e13-9993-af7267721f28",
+                    "leftValue": "={{ $json.ruta.sub_tipo }}",
+                    "rightValue": "registrar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5fb68cf5-8786-4565-823b-6e259d66f96c",
+                    "leftValue": "={{ $json.ruta.sub_tipo }}",
+                    "rightValue": "materia",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "01344271-acee-4ec8-84a5-3fb359843184",
+                    "leftValue": "={{ $json.ruta.sub_tipo }}",
+                    "rightValue": "cancelar",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "efa1bd04-64c0-40cc-8f66-456719ff804a",
+                    "leftValue": "={{ $json.ruta.sub_tipo }}",
+                    "rightValue": "coordinacion",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2032,
+        2496
+      ],
+      "id": "10e67984-9b3e-458f-b511-a3ccca524902",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M",
+          "mode": "list",
+          "cachedResultName": "TutorBot_DBJ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 799354737,
+          "mode": "list",
+          "cachedResultName": "ESTUDIANTES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit#gid=799354737"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1680,
+        1328
+      ],
+      "id": "9fdce4d6-d3a9-44f6-a71d-b2076b30c204",
+      "name": "Obtener ID",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kPMiPAaCJhVnXwuI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const webhookInput = $('Webhook').first();\nconst datosForm = webhookInput ? webhookInput.json.body : null;\n\n// 2. Obtener todos los items actuales de la hoja (que vienen del nodo 'Get row(s) in sheet')\nconst todosLosRegistros = items;\n\n// 3. Inicializar contadores para calcular los IDs más altos\nlet maxIdTutoria = 0;\nlet maxIdEstudiante = 0;\n\nfor (const registro of todosLosRegistros) {\n    // Buscar el ID de tutoría más alto (Formato: TUT00X)\n    const idTutoriaStr = registro.json.id_tutoria; \n    if (idTutoriaStr && typeof idTutoriaStr === 'string') {\n        const idTutoriaNum = parseInt(idTutoriaStr.replace('TUT', ''), 10);\n        if (!isNaN(idTutoriaNum) && idTutoriaNum > maxIdTutoria) {\n            maxIdTutoria = idTutoriaNum;\n        }\n    }\n\n    // Buscar el ID de estudiante más alto (Formato: E00X)\n    const idEstudianteStr = registro.json.id_estudiante; \n    if (idEstudianteStr && typeof idEstudianteStr === 'string') {\n        const idEstudianteNum = parseInt(idEstudianteStr.replace('E', ''), 10);\n        if (!isNaN(idEstudianteNum) && idEstudianteNum > maxIdEstudiante) {\n            maxIdEstudiante = idEstudianteNum;\n        }\n    }\n}\n\n// 4. Generar los nuevos IDs autoincrementales\nconst nuevoIdTutoria = 'TUT' + (maxIdTutoria + 1).toString().padStart(3, '0');\nconst nuevoIdEstudiante = 'E' + (maxIdEstudiante + 1).toString().padStart(3, '0');\n\n// 5. Retornar la información del webhook formateada con ambos IDs generados\nreturn [{\n    json: {\n        id_tutoria: nuevoIdTutoria,\n        id_estudiante: nuevoIdEstudiante,\n        nombre: datosForm.nombres,\n        email: datosForm.email,\n        materia: datosForm.materia,\n        chatId: datosForm.chatid\n    }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        1328
+      ],
+      "id": "5ee3eb27-eef2-4cb7-9dc0-533327cddbd1",
+      "name": "MAPEO DE DATOS"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M",
+          "mode": "list",
+          "cachedResultName": "TutorBot_DBJ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 799354737,
+          "mode": "list",
+          "cachedResultName": "ESTUDIANTES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit#gid=799354737"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nombre": "={{ $json.nombre }}",
+            "email": "={{ $json.email }}",
+            "materia": "={{ $json.materia }}",
+            "id_tutoria": "={{ $json.id_tutoria }}",
+            "id_estudiante": "={{ $json.id_estudiante }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_estudiante",
+              "displayName": "id_estudiante",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "materia",
+              "displayName": "materia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "id_tutoria",
+              "displayName": "id_tutoria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2096,
+        1328
+      ],
+      "id": "474acfad-c4a5-4309-b240-89a11f86222f",
+      "name": "ENVIO DE DATOS",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kPMiPAaCJhVnXwuI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8692513632:AAFTnD0ocf0h9y0d-dZpvvgS991b9ICT2q4/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{ $('Code in JavaScript').item.json.ruta.chatid }}\",\n  \"text\": \"Hola, ¿Como podemos ayudarte el dia dehoy?\",\n  \"reply_markup\": {\n    \"inline_keyboard\": [\n      [\n        {\n          \"text\": \"📚 Programar Tutoria\",\n          \"callback_data\": \"menu_solicitar\"\n        }\n      ],\n      [\n        {\n          \"text\": \"👤 Crear Cuenta\",\n          \"callback_data\": \"registrar\"\n        }\n      ],\n      [\n        {\n          \"text\": \"❌ Cancelar Tutoria\",\n          \"callback_data\": \"cancelar\"\n        }\n      ],\n      [\n      {\n        \"text\": \"🗂 Coordinación\",\n        \"callback_data\": \"coordinacion_materias\"\n      }\n      ]\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2032,
+        1712
+      ],
+      "id": "f1b127db-5612-44ce-9c02-399b176b7f7e",
+      "name": "Menu Principal"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8692513632:AAFTnD0ocf0h9y0d-dZpvvgS991b9ICT2q4/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2608,
+        2048
+      ],
+      "id": "9148aec1-b68c-416b-bb33-eda359d80b25",
+      "name": "Menu Materia"
+    },
+    {
+      "parameters": {
+        "jsCode": "const filas = $input.all();\n\n\nconst botones = filas.map(item => {\n  return [{\n    text: item.json.especialidad_materias,\n    callback_data: `materia_${item.json.especialidad_materias}`\n  }];\n});\n\nbotones.push([{\n  text: \"⬅️ Regresar al menú principal\",\n  callback_data: \"menu_principal\"\n}]);\n\nreturn [{\n  json: {\n    chat_id: $('Code in JavaScript').first().json.ruta.chatid,\n    text: \"🤓 ¿Qué materia te gustaría repasar hoy?\",\n    reply_markup: {\n      inline_keyboard: botones\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        2048
+      ],
+      "id": "4ac54690-fc48-4399-aef7-9a85ba735172",
+      "name": "Mapeo Materias"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8692513632:AAFTnD0ocf0h9y0d-dZpvvgS991b9ICT2q4/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{ $('Code in JavaScript').item.json.ruta.chatid }}\",\n  \"text\": \"¡Genial! Estás a un clic de tus tutorías. Completa tu registro.\",\n  \"reply_markup\": {\n    \"inline_keyboard\": [\n      [\n        {\n          \"text\": \"📝 Registrarse\",\n          \"url\": \"https://jose-langl.github.io/formulario_n8n/?chatId={{ $('Code in JavaScript').item.json.ruta.chatid }}\"\n        }\n      ]\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2336,
+        2320
+      ],
+      "id": "0f88743d-6b25-43ea-9a06-4d388a9ca648",
+      "name": "Formulario Registro"
+    },
+    {
+      "parameters": {
+        "jsCode": "const todasLasMaterias = $input.all();\nconst valorSeleccionado = $('Code in JavaScript').first().json.ruta.valor;\n\n// 1. Filtramos para encontrar la materia exacta\nconst materia = todasLasMaterias.find(item => \n  item.json.Materia.toLowerCase() === valorSeleccionado.toLowerCase()\n);\n\n// 2. Construimos el mensaje usando backticks (`)\nif (materia) {\n  const mensaje = `🎓 *Detalle de la Tutoría*\n\n*Materia:* ${materia.json.Materia}\n*Día:* ${materia.json.dia_semana}\n*Horario:* ${materia.json.hora_inicio} - ${materia.json.hora_fin}\n*Precio:* ${materia.json.precio}\n*Estado:* ${materia.json.estado}\n\n¡Espero que esta información te sea de gran ayuda!`;\n\n  return [{\n    json: {\n      chat_id: $('Code in JavaScript').first().json.ruta.chatid,\n      text: mensaje,\n      parse_mode: \"Markdown\"\n    }\n  }];\n} else {\n  return [{\n    json: {\n      chat_id: $('Code in JavaScript').first().json.ruta.chatid,\n      text: \"❌ Lo siento, no encontré información para la materia: \" + valorSeleccionado\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2560,
+        2592
+      ],
+      "id": "2768be73-8a73-45eb-a198-5b3ea7260dba",
+      "name": "Info Materia"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8692513632:AAFTnD0ocf0h9y0d-dZpvvgS991b9ICT2q4/sendMessage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chat_id\": \"{{ $('Code in JavaScript').item.json.ruta.chatid }}\",\n  \"text\": \"Para poder cancelar tu tutoria necesito que me brindes de tu ID\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2384,
+        2832
+      ],
+      "id": "23369a18-0141-43d4-b72c-e319735cda9b",
+      "name": "Formulario Registro1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M",
+          "mode": "list",
+          "cachedResultName": "TutorBot_DBJ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 732480775,
+          "mode": "list",
+          "cachedResultName": "TUTORIAS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IZ8BCu-y5NRlnl16sVcEx1wXf97Av2ALpRipdb5V59M/edit#gid=732480775"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2320,
+        3088
+      ],
+      "id": "77061be5-adc5-496c-96f0-5bf8e2b1cfb0",
+      "name": "Tutorias",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kPMiPAaCJhVnXwuI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Trigger').item.json.callback_query.message.chat.id }}",
+        "text": "=📚 Resumen de Tutorías por Materia\n----------------------------\n{{ $json.materia}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2752,
+        3072
+      ],
+      "id": "c7adfdcc-1615-4e1c-a3a2-d9bbd3143e82",
+      "name": "Send a text message",
+      "webhookId": "3ab6f08f-3b16-4823-b1cc-9a2c507b23b6",
+      "credentials": {
+        "telegramApi": {
+          "id": "z4OcYpVLiNwjaoEu",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "materias"
+            }
+          ]
+        },
+        "fieldsToSplitBy": "materia",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        2512,
+        3104
+      ],
+      "id": "80160ef2-b481-410a-afa9-9ade4acc4c53",
+      "name": "Summarize"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Obtener ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Materia": {
+      "main": [
+        [
+          {
+            "node": "Mapeo Materias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Disponibilidad": {
+      "main": [
+        [
+          {
+            "node": "Info Materia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Menu Principal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Materia",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formulario Registro",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Disponibilidad",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Formulario Registro1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tutorias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener ID": {
+      "main": [
+        [
+          {
+            "node": "MAPEO DE DATOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MAPEO DE DATOS": {
+      "main": [
+        [
+          {
+            "node": "ENVIO DE DATOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Menu Materia": {
+      "main": [
+        []
+      ]
+    },
+    "Mapeo Materias": {
+      "main": [
+        [
+          {
+            "node": "Menu Materia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Info Materia": {
+      "main": [
+        [
+          {
+            "node": "Mensaje Materia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tutorias": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "b97a9b34-54f8-419e-8f79-f9c3325d1b70",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e6a1182b95d4e0c6158e25196c3416f7de053fdefde87de58e9ee079566807ce"
+  },
+  "nodeGroups": [],
+  "id": "rl2k7yWSTTo8HQso",
+  "tags": []
+}
